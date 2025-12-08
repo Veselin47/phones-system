@@ -1,71 +1,69 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Phone;
+use App\Http\Controllers\Controller; // Добави това
 use App\Models\PhoneModel;
 use App\Models\Manufacturer;
 use Illuminate\Http\Request;
 
-class PhoneController extends Controller
+class PhoneModelController extends Controller
 {
-    // Админски списък (Таблица с редакция/триене)
+    // АДМИН: Списък с всички модели
     public function index()
     {
-        // Зареждаме телефоните с връзките им за по-бърза заявка
-        $phones = Phone::with(['model', 'manufacturer'])
-                       ->orderBy('created_at', 'desc')
-                       ->paginate(15);
-                       
-        return view('admin.phones.index', compact('phones'));
+        $models = PhoneModel::with('manufacturer')->orderBy('name')->paginate(15);
+        return view('admin.models.index', compact('models'));
     }
 
+    // АДМИН: Форма за добавяне
     public function create()
     {
-        $models = PhoneModel::with('manufacturer')->get();
-        $manufacturers = Manufacturer::all();
-        return view('admin.phones.create', compact('models', 'manufacturers'));
+        $manufacturers = Manufacturer::orderBy('name')->get();
+        return view('admin.models.create', compact('manufacturers'));
     }
 
+    // АДМИН: Записване
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'phone_model_id' => 'required',
-            'manufacturer_id' => 'required',
-            'release_year' => 'required|integer'
+            'name' => 'required|string|max:255',
+            'manufacturer_id' => 'required|exists:manufacturers,id',
         ]);
 
-        Phone::create($request->all());
+        PhoneModel::create($request->all());
 
-        return redirect()->route('admin.phones.index')->with('success', 'Телефонът е добавен успешно.');
+        return redirect()->route('admin.models.index')->with('success', 'Моделът е добавен успешно.');
     }
 
-    public function edit(Phone $phone)
+    // АДМИН: Форма за редакция
+    public function edit(PhoneModel $model)
     {
-        $models = PhoneModel::with('manufacturer')->get();
-        $manufacturers = Manufacturer::all();
-        return view('admin.phones.edit', compact('phone', 'models', 'manufacturers'));
+        $manufacturers = Manufacturer::orderBy('name')->get();
+        return view('admin.models.edit', compact('model', 'manufacturers'));
     }
 
-    public function update(Request $request, Phone $phone)
+    // АДМИН: Обновяване
+    public function update(Request $request, PhoneModel $model)
     {
         $request->validate([
-            'name' => 'required',
-            'phone_model_id' => 'required',
-            'manufacturer_id' => 'required',
-            'release_year' => 'required|integer'
+            'name' => 'required|string|max:255',
+            'manufacturer_id' => 'required|exists:manufacturers,id',
         ]);
 
-        $phone->update($request->all());
+        $model->update($request->all());
 
-        return redirect()->route('admin.phones.index')->with('success', 'Телефонът е обновен.');
+        return redirect()->route('admin.models.index')->with('success', 'Моделът е обновен.');
     }
 
-    public function destroy(Phone $phone)
+    // АДМИН: Изтриване
+    public function destroy(PhoneModel $model)
     {
-        $phone->delete();
-        return redirect()->route('admin.phones.index')->with('success', 'Телефонът е изтрит.');
+        if($model->phones()->count() > 0) {
+            return back()->with('error', 'Не може да изтриете този модел, защото има телефони свързани с него!');
+        }
+
+        $model->delete();
+        return redirect()->route('admin.models.index')->with('success', 'Моделът е изтрит.');
     }
 }

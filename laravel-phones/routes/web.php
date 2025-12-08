@@ -13,7 +13,7 @@ use App\Http\Controllers\PhoneController; // Публичен контролер
 use App\Http\Controllers\Admin\PhoneController as AdminPhoneController; 
 use App\Http\Controllers\Admin\ManufacturerController; // Админ контролер за марки
 use App\Http\Controllers\PhoneModelController; // Админ контролер за модели
-
+use App\Http\Controllers\PublicModelController; 
 // --- МОДЕЛИ (за публичните closures) ---
 use App\Models\Manufacturer;
 use App\Models\PhoneModel;
@@ -34,11 +34,8 @@ Route::get('/manufacturers', function () {
     return view('manufacturers.index', compact('manufacturers'));
 })->name('manufacturers.index');
 
-// Публичен списък: Модели
-Route::get('/models', function () {
-    $models = PhoneModel::with('manufacturer')->orderBy('name')->paginate(12);
-    return view('models.index', compact('models'));
-})->name('models.index');
+// Публичен списък:  Модели (вече ползваме PublicModelController)
+Route::get('/models', [PublicModelController::class, 'index'])->name('models.index');
 
 /*
 |--------------------------------------------------------------------------
