@@ -8,11 +8,10 @@ use App\Http\Middleware\IsAdmin;
 
 // --- КОНТРОЛЕРИ ---
 use App\Http\Controllers\PhoneController; // Публичен контролер за телефони
-
 // Тук използваме "as", за да не се бърка с публичния
 use App\Http\Controllers\Admin\PhoneController as AdminPhoneController; 
 use App\Http\Controllers\Admin\ManufacturerController; // Админ контролер за марки
-use App\Http\Controllers\PhoneModelController; // Админ контролер за модели
+use App\Http\Controllers\Admin\PhoneModelController; // Админ контролер за модели
 use App\Http\Controllers\PublicModelController; 
 // --- МОДЕЛИ (за публичните closures) ---
 use App\Models\Manufacturer;
