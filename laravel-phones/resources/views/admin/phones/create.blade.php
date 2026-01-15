@@ -11,12 +11,17 @@
 
         <div style="background-color: white; padding: 2rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
             
-            <form action="{{ route('admin.phones.store') }}" method="POST">
+            <form action="{{ route('admin.phones.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 
                 <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Снимка</label>
+                    <input type="file" name="image" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem;">
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
                     <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Име на обявата/телефона</label>
-                    <input type="text" name="name" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem;" placeholder="Напр. iPhone 13 Pro Max - Запазен" required>
+                    <input type="text" name="name" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem;" placeholder="Напр. iPhone 13 Pro Max" required>
                 </div>
 
                 <div style="margin-bottom: 1.5rem;">

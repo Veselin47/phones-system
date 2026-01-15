@@ -21,5 +21,11 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+        $this->call([
+        AdminUserSeeder::class,
+        ManufacturerSeeder::class, // Първо марките
+        PhoneModelSeeder::class,   // После моделите (зависят от марките)
+        PhoneSeeder::class,        // Накрая телефоните (зависят и от двете)
+    ]);
     }
 }

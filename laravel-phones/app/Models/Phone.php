@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Phone extends Model
 {
-    protected $fillable = ['name','phone_model_id','manufacturer_id','release_year'];
+    protected $fillable = ['name','phone_model_id','manufacturer_id','release_year','image'];
 
     public function model()
     {

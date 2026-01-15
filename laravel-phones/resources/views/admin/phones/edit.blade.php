@@ -11,10 +11,20 @@
 
         <div style="background-color: white; padding: 2rem; border-radius: 0.75rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
             
-            <form action="{{ route('admin.phones.update', $phone->id) }}" method="POST">
+            <form action="{{ route('admin.phones.update', $phone->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Снимка</label>
+                    @if($phone->image)
+                        <div style="margin-bottom: 0.5rem;">
+                            <img src="{{ asset('storage/' . $phone->image) }}" alt="Current Image" style="height: 100px; border-radius: 0.5rem; border: 1px solid #ddd;">
+                        </div>
+                    @endif
+                    <input type="file" name="image" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem;">
+                </div>
+
                 <div style="margin-bottom: 1.5rem;">
                     <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Име</label>
                     <input type="text" name="name" value="{{ $phone->name }}" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem;" required>

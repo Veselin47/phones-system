@@ -7,6 +7,7 @@ use App\Models\Phone;
 use App\Models\PhoneModel;
 use App\Models\Manufacturer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage; 
 
 class PhoneController extends Controller
 {
@@ -35,10 +36,19 @@ class PhoneController extends Controller
             'name' => 'required',
             'phone_model_id' => 'required',
             'manufacturer_id' => 'required',
-            'release_year' => 'required|integer'
+            'release_year' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Валидация за снимка
         ]);
 
-        Phone::create($request->all());
+        $data = $request->all();
+
+        // Проверка и качване на снимка
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('phones', 'public');
+            $data['image'] = $path;
+        }
+
+        Phone::create($data);
 
         return redirect()->route('admin.phones.index')->with('success', 'Телефонът е добавен успешно.');
     }
@@ -62,10 +72,24 @@ class PhoneController extends Controller
             'name' => 'required',
             'phone_model_id' => 'required',
             'manufacturer_id' => 'required',
-            'release_year' => 'required|integer'
+            'release_year' => 'required|integer',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $phone->update($request->all());
+        $data = $request->all();
+
+        // Ако е качена нова снимка
+        if ($request->hasFile('image')) {
+            // 1. Изтриваме старата, ако има
+            if ($phone->image) {
+                Storage::disk('public')->delete($phone->image);
+            }
+            // 2. Качваме новата
+            $path = $request->file('image')->store('phones', 'public');
+            $data['image'] = $path;
+        }
+
+        $phone->update($data);
 
         return redirect()->route('admin.phones.index')->with('success', 'Телефонът е обновен.');
     }
@@ -74,6 +98,9 @@ class PhoneController extends Controller
     public function destroy($id)
     {
         $phone = Phone::findOrFail($id);
+        if ($phone->image) {
+            Storage::disk('public')->delete($phone->image);
+        }
         $phone->delete();
         
         return redirect()->route('admin.phones.index')->with('success', 'Телефонът е изтрит.');
